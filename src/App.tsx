@@ -11,6 +11,8 @@ import LoginAdmin from "./UI/pages/Login/LoginAdmin";
 import Dashboard from "./UI/pages/dashboard/Dashboard";
 import CrearConductor from "./UI/pages/CRUDS/Conductor/CrearConductor";
 import BuscarConductor from "./UI/pages/CRUDS/Conductor/BuscarConductordni";
+import CrearAdministrador from "./UI/pages/CRUDS/Administrador/CrearAdministrador";
+import FormCrearEsp32 from "./UI/pages/CRUDS/Esp32/CreasEsp32";
 
 import { IAdministrador } from "./models/IAdministrador";
 import EditarConductor from "./UI/pages/CRUDS/Conductor/EditarConductor";
@@ -74,6 +76,24 @@ function App() {
           element={
             <ProtectedRoute>
               <EditarConductor />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/create"
+          element={
+            <ProtectedRoute>
+              <CrearAdministrador />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/esp32/create"
+          element={
+            <ProtectedRoute>
+              <FormCrearEsp32 />
             </ProtectedRoute>
           }
         />

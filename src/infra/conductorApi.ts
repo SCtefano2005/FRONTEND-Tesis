@@ -9,7 +9,6 @@ const API_URL = "https://backend-tesis-jvfm.onrender.com/api/conductor";
 export const createConductor = async (conductorData: IConductor) => {
   const token = getToken();
   console.log("🔑 Token usado en createConductor:", token);
-
   if (!token) throw new Error("No hay token disponible");
 
   const response = await axios.post(`${API_URL}/conductores`, conductorData, {
@@ -18,7 +17,6 @@ export const createConductor = async (conductorData: IConductor) => {
       "Content-Type": "application/json",
     },
   });
-
   return response.data;
 };
 
@@ -29,7 +27,6 @@ export const buscarConductorPorDniApi = async (dni: string): Promise<IConductorR
   const { data } = await axios.get<IConductorResponse>(`${API_URL}/conductores/${dni}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-
   return data;
 };
 
@@ -47,6 +44,18 @@ export const actualizarConductorApi = async (
       "Content-Type": "application/json",
     },
   });
+  return response.data;
+};
 
+// Eliminar conductor por DNI
+export const eliminarConductorApi = async (dni: string) => {
+  const token = getToken();
+  if (!token) throw new Error("No hay token disponible");
+
+  const response = await axios.delete(`${API_URL}/conductores/${dni}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response.data;
 };

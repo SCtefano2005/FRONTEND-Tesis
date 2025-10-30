@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createConductorUseCase } from "../../../../application/conductorUseCases";
-import { IConductor } from "../../../../models/IConductor";
+import { createAdminUseCase } from "../../../../application/adminUseCases";
+import { IAdministradorCreate } from "../../../../models/IAdministrador";
 
-export default function CrearConductor() {
+export default function CrearAdministrador() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     identificacion: "",
@@ -13,15 +13,15 @@ export default function CrearConductor() {
     email: "",
     telefono: "",
     direccion: "",
-    numero_licencia: "",
-    categoria_lic: "",
+    area: "",
+    nivel: "admin_local",
   });
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -31,55 +31,42 @@ export default function CrearConductor() {
     setSuccess("");
     setLoading(true);
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("No hay token de sesión");
-      setLoading(false);
-      return;
-    }
-
     try {
-      // 🔑 Normalizar valores
       const telefonoNormalizado = form.telefono.startsWith("+51")
         ? form.telefono
         : `+51${form.telefono}`;
+
       const dniNormalizado = form.identificacion.startsWith("DNI-")
         ? form.identificacion
         : `DNI-${form.identificacion}`;
 
-      // 🚀 Armar payload completo
-      const data: IConductor = {
+      // 🔹 Construir objeto según modelo IAdministradorCreate
+      const data: IAdministradorCreate = {
         identificacion: dniNormalizado,
-        password: form.password,
-        rol: "conductor" as const,
-        estado: "activo" as const,
+        password: form.password || "Admin1234",
+        rol: "admin",
+        estado: "activo",
         datos_personal: {
-          nombres: form.nombres,
-          apellidos: form.apellidos,
-          email: form.email,
-          telefono: telefonoNormalizado,
-          direccion: form.direccion,
+          nombres: form.nombres || "Nombre Genérico",
+          apellidos: form.apellidos || "Apellido Genérico",
+          email: form.email || "ejemplo@correo.com",
+          telefono: telefonoNormalizado || "+51999999999",
+          direccion: form.direccion || "Dirección por defecto",
         },
         config_sesion: {
           notificaciones: true,
-          tema: "oscuro" as const,
+          tema: "oscuro",
         },
-        conductor: {
-          numero_licencia: form.numero_licencia,
-          categoria_lic: form.categoria_lic,
-          estado_conduct: "activo" as const,
-          documentos: [],
-          experiencia: {
-            anios: 1,
-            historial: [],
-          },
+        administrador: {
+          area: form.area || "Operaciones",
+          nivel: form.nivel as "superadmin" | "admin_local",
+          permisos: [],
         },
       };
 
-      const response = await createConductorUseCase(data);
-      console.log("✅ Respuesta del servidor:", response);
+      await createAdminUseCase(data);
 
-      setSuccess("✅ Conductor creado correctamente");
+      setSuccess("✅ Administrador creado correctamente");
       setForm({
         identificacion: "",
         password: "",
@@ -88,20 +75,12 @@ export default function CrearConductor() {
         email: "",
         telefono: "",
         direccion: "",
-        numero_licencia: "",
-        categoria_lic: "",
+        area: "",
+        nivel: "admin_local",
       });
     } catch (err: any) {
-      console.error("❌ Error al crear conductor:", err);
-
-      const errorMsg =
-        err.response?.data?.mensaje ||
-        err.response?.data?.message ||
-        err.response?.data ||
-        err.message ||
-        "❌ Error desconocido al crear conductor";
-
-      setError(errorMsg);
+      console.error("❌ Error al crear administrador:", err.response?.data || err);
+      setError(err.response?.data?.message || "❌ Error al crear administrador");
     } finally {
       setLoading(false);
     }
@@ -120,7 +99,7 @@ export default function CrearConductor() {
     >
       <div
         style={{
-          maxWidth: "600px",
+          maxWidth: "700px",
           width: "100%",
           background: "#ffffff",
           borderRadius: "16px",
@@ -163,10 +142,10 @@ export default function CrearConductor() {
               fontWeight: "700",
             }}
           >
-            Crear Conductor
+            👨‍💼 Crear Administrador
           </h2>
           <p style={{ color: "#718096", marginTop: "0.5rem" }}>
-            Complete los datos del nuevo conductor
+            Complete los datos del nuevo administrador
           </p>
         </div>
 
@@ -180,9 +159,13 @@ export default function CrearConductor() {
               borderRadius: "8px",
               marginBottom: "1.5rem",
               border: "1px solid #fc8181",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
             }}
           >
-            {error}
+            <span style={{ fontSize: "1.2rem" }}>⚠️</span>
+            <span>{error}</span>
           </div>
         )}
         {success && (
@@ -194,9 +177,13 @@ export default function CrearConductor() {
               borderRadius: "8px",
               marginBottom: "1.5rem",
               border: "1px solid #68d391",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
             }}
           >
-            {success}
+            <span style={{ fontSize: "1.2rem" }}>✅</span>
+            <span>{success}</span>
           </div>
         )}
 
@@ -215,7 +202,7 @@ export default function CrearConductor() {
                 fontWeight: "600",
               }}
             >
-              Datos de Acceso
+              🔐 Datos de Acceso
             </h3>
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div>
@@ -296,7 +283,7 @@ export default function CrearConductor() {
                 fontWeight: "600",
               }}
             >
-              Datos Personales
+              👤 Datos Personales
             </h3>
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
@@ -448,7 +435,6 @@ export default function CrearConductor() {
                     placeholder="Dirección"
                     value={form.direccion}
                     onChange={handleChange}
-                    required
                     style={{
                       width: "100%",
                       padding: "0.75rem",
@@ -467,7 +453,7 @@ export default function CrearConductor() {
             </div>
           </div>
 
-          {/* Datos de Licencia */}
+          {/* Datos Administrativos */}
           <div>
             <h3
               style={{
@@ -477,72 +463,78 @@ export default function CrearConductor() {
                 fontWeight: "600",
               }}
             >
-              Datos de Licencia
+              ⚙️ Datos Administrativos
             </h3>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-              <div>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "0.5rem",
-                    color: "#4a5568",
-                    fontSize: "0.9rem",
-                    fontWeight: "500",
-                  }}
-                >
-                  Número de Licencia
-                </label>
-                <input
-                  name="numero_licencia"
-                  placeholder="Ej: L123456"
-                  value={form.numero_licencia}
-                  onChange={handleChange}
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    border: "2px solid #e2e8f0",
-                    borderRadius: "8px",
-                    fontSize: "1rem",
-                    outline: "none",
-                    transition: "border-color 0.3s",
-                    boxSizing: "border-box",
-                  }}
-                  onFocus={(e) => (e.target.style.borderColor = "#667eea")}
-                  onBlur={(e) => (e.target.style.borderColor = "#e2e8f0")}
-                />
-              </div>
-              <div>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "0.5rem",
-                    color: "#4a5568",
-                    fontSize: "0.9rem",
-                    fontWeight: "500",
-                  }}
-                >
-                  Categoría
-                </label>
-                <input
-                  name="categoria_lic"
-                  placeholder="Ej: A-IIb"
-                  value={form.categoria_lic}
-                  onChange={handleChange}
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    border: "2px solid #e2e8f0",
-                    borderRadius: "8px",
-                    fontSize: "1rem",
-                    outline: "none",
-                    transition: "border-color 0.3s",
-                    boxSizing: "border-box",
-                  }}
-                  onFocus={(e) => (e.target.style.borderColor = "#667eea")}
-                  onBlur={(e) => (e.target.style.borderColor = "#e2e8f0")}
-                />
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <div>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "0.5rem",
+                      color: "#4a5568",
+                      fontSize: "0.9rem",
+                      fontWeight: "500",
+                    }}
+                  >
+                    Área
+                  </label>
+                  <input
+                    name="area"
+                    placeholder="Ej: Operaciones"
+                    value={form.area}
+                    onChange={handleChange}
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem",
+                      border: "2px solid #e2e8f0",
+                      borderRadius: "8px",
+                      fontSize: "1rem",
+                      outline: "none",
+                      transition: "border-color 0.3s",
+                      boxSizing: "border-box",
+                    }}
+                    onFocus={(e) => (e.target.style.borderColor = "#667eea")}
+                    onBlur={(e) => (e.target.style.borderColor = "#e2e8f0")}
+                  />
+                </div>
+                <div>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "0.5rem",
+                      color: "#4a5568",
+                      fontSize: "0.9rem",
+                      fontWeight: "500",
+                    }}
+                  >
+                    Nivel de Acceso
+                  </label>
+                  <select
+                    name="nivel"
+                    value={form.nivel}
+                    onChange={handleChange}
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem",
+                      border: "2px solid #e2e8f0",
+                      borderRadius: "8px",
+                      fontSize: "1rem",
+                      outline: "none",
+                      transition: "border-color 0.3s",
+                      boxSizing: "border-box",
+                      cursor: "pointer",
+                      background: "#fff",
+                    }}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = "#667eea")}
+                    onBlur={(e) => (e.currentTarget.style.borderColor = "#e2e8f0")}
+                  >
+                    <option value="admin_local">Administrador Local</option>
+                    <option value="superadmin">Super Administrador</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
@@ -581,7 +573,7 @@ export default function CrearConductor() {
               }
             }}
           >
-            {loading ? "Creando..." : "Crear Conductor"}
+            {loading ? "⏳ Creando..." : "✨ Crear Administrador"}
           </button>
         </form>
       </div>

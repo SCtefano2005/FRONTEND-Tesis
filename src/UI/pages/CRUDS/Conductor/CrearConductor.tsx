@@ -131,7 +131,7 @@ export default function CrearConductor() {
         {/* Header */}
         <div style={{ marginBottom: "2rem" }}>
           <button
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/buscar-conductor")}
             style={{
               background: "transparent",
               border: "2px solid #667eea",
@@ -153,7 +153,7 @@ export default function CrearConductor() {
               e.currentTarget.style.color = "#667eea";
             }}
           >
-            ← Volver al Dashboard
+            ← Volver a buscador
           </button>
           <h2
             style={{

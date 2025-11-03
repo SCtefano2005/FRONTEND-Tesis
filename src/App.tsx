@@ -13,9 +13,20 @@ import CrearConductor from "./UI/pages/CRUDS/Conductor/CrearConductor";
 import BuscarConductor from "./UI/pages/CRUDS/Conductor/BuscarConductordni";
 import CrearAdministrador from "./UI/pages/CRUDS/Administrador/CrearAdministrador";
 import FormCrearEsp32 from "./UI/pages/CRUDS/Esp32/CreasEsp32";
+import FormSearchbyCodigo from "./UI/pages/CRUDS/Esp32/Buscar_x_codigo"
 
 import { IAdministrador } from "./models/IAdministrador";
 import EditarConductor from "./UI/pages/CRUDS/Conductor/EditarConductor";
+import FormEditEsp32 from "./UI/pages/CRUDS/Esp32/FormEditEsp32";
+import FormCreateRuta from "./UI/pages/CRUDS/Ruta/FormCreateRuta";
+import FormBuscarRuta from "./UI/pages/CRUDS/Ruta/FormBuscarRuta";
+import FormEditarRuta from "./UI/pages/CRUDS/Ruta/FormEditarRuta";
+import FormCrearBus from "./UI/pages/CRUDS/Bus/FormCreateBus";
+import FormBuscarBus from "./UI/pages/CRUDS/Bus/FormBuscarBus";
+import FormEditBus from "./UI/pages/CRUDS/Bus/FormEditBus";
+import FormCreateViaje from "./UI/pages/CRUDS/Viaje/FormCreateViaje";
+import SuperBuscadorViajes from "./UI/pages/CRUDS/Viaje/FormSearchViaje"
+import FormEditViaje from "./UI/pages/CRUDS/Viaje/FormEditViaje";
 
 // Componente para proteger rutas
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -94,6 +105,100 @@ function App() {
           element={
             <ProtectedRoute>
               <FormCrearEsp32 />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/esp32/searchbycode"
+          element={
+            <ProtectedRoute>
+              <FormSearchbyCodigo />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/esp32/editar/:id/:codigo"
+          element={
+            <ProtectedRoute>
+              <FormEditEsp32 />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ruta/create"
+          element={
+            <ProtectedRoute>
+              <FormCreateRuta />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ruta/search"
+          element={
+            <ProtectedRoute>
+              <FormBuscarRuta />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ruta/editar/:id"
+          element={
+            <ProtectedRoute>
+              <FormEditarRuta />
+            </ProtectedRoute>
+          }
+        />
+
+
+        <Route
+          path="/bus/create/"
+          element={
+            <ProtectedRoute>
+              <FormCrearBus />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/bus/search/"
+          element={
+            <ProtectedRoute>
+              <FormBuscarBus />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/bus/edit/:placa"
+          element={
+            <ProtectedRoute>
+              <FormEditBus />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/viaje/create"
+          element={
+            <ProtectedRoute>
+              <FormCreateViaje />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/viaje/search"
+          element={
+            <ProtectedRoute>
+              <SuperBuscadorViajes />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/viaje/edit/:id"
+          element={
+            <ProtectedRoute>
+              <FormEditViaje />
             </ProtectedRoute>
           }
         />

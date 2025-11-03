@@ -236,7 +236,7 @@ const EditarConductor: React.FC = () => {
         {/* Header */}
         <div style={{ marginBottom: "2rem" }}>
           <button
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/buscar-conductor")}
             style={{
               background: "rgba(255, 255, 255, 0.2)",
               backdropFilter: "blur(10px)",
@@ -259,7 +259,7 @@ const EditarConductor: React.FC = () => {
               e.currentTarget.style.transform = "translateY(0)";
             }}
           >
-            ← Volver al Dashboard
+            ← Volver a Buscador
           </button>
         </div>
 

@@ -17,3 +17,9 @@ export interface IConductorResponse {
   usuario: IUsuario;
   conductor: IConductorDetalle;
 }
+
+export interface IResumenConductor {
+  dni: string;
+  numero_licencia: string;
+  nombre: string;
+}

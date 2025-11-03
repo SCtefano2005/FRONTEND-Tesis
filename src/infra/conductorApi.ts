@@ -2,7 +2,7 @@
 import axios from "axios";
 import { IConductor } from "../models/IConductor";
 import { getToken } from "../application/authUseCases";
-import { IConductorResponse } from "../models/IConductorResponse";
+import { IConductorResponse , IResumenConductor} from "../models/IConductorResponse";
 
 const API_URL = "https://backend-tesis-jvfm.onrender.com/api/conductor";
 
@@ -29,6 +29,18 @@ export const buscarConductorPorDniApi = async (dni: string): Promise<IConductorR
   });
   return data;
 };
+
+export const buscarConductorPorIdApi = async (id: string): Promise<IResumenConductor> => {
+  const token = getToken();
+  if (!token) throw new Error("No hay token disponible");
+
+  const { data } = await axios.get<IResumenConductor>(`${API_URL}/conductores/id/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  return data;
+};
+
 
 // Actualizar conductor por DNI
 export const actualizarConductorApi = async (

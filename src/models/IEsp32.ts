@@ -13,3 +13,7 @@ export interface IEsp32Response {
   actualizado: string;   // ISO string date
   __v?: number;          // Mongoose version key
 }
+
+export interface IEsp32SearchbyCodigo {
+  codigo: string;
+}

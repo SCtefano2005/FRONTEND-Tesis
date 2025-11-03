@@ -3,6 +3,7 @@ import {
   getAllEsp32,
   getEsp32ById,
   updateEsp32,
+  getEsp32ByIdentificacion,
   deleteEsp32,
 } from "../infra/esp32Api";
 import { IEsp32Create, IEsp32Response } from "../models/IEsp32";
@@ -19,10 +20,13 @@ export const getAllEsp32UseCase = async (): Promise<IEsp32Response[]> => {
 };
 
 // 🔹 Caso de uso: obtener un ESP32 por ID
-export const getEsp32ByIdUseCase = async (id: string): Promise<IEsp32Response> => {
-  return await getEsp32ById(id);
+export const getEsp32ByIdUseCase = async (codigo: string): Promise<IEsp32Response> => {
+  return await getEsp32ById(codigo);
 };
-
+// 🔹 Caso de uso: obtener un ESP32 por ID
+export const getEsp32ByIdentificacionUseCase = async (id: string): Promise<IEsp32Response> => {
+  return await getEsp32ByIdentificacion(id);
+};
 // 🔹 Caso de uso: actualizar un ESP32
 export const updateEsp32UseCase = async (
   id: string,

@@ -63,7 +63,7 @@ const FormCrearEsp32: React.FC = () => {
         {/* Header */}
         <div style={{ marginBottom: "2rem" }}>
           <button
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/esp32/searchbycode")}
             style={{
               background: "transparent",
               border: "2px solid #667eea",

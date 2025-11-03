@@ -33,12 +33,26 @@ export const getAllEsp32 = async (): Promise<IEsp32Response[]> => {
   return response.data;
 };
 
-// 🔹 Obtener un ESP32 por su ID
-export const getEsp32ById = async (id: string): Promise<IEsp32Response> => {
+// 🔹 Obtener un ESP32 por su codigo
+export const getEsp32ById = async (codigo: string): Promise<IEsp32Response> => {
   const token = getToken();
   if (!token) throw new Error("No hay token de autenticación");
 
-  const response = await axios.get(`${API_URL}/${id}`, {
+  const response = await axios.get(`${API_URL}/${codigo}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
+
+// 🔹 Obtener un ESP32 por su codigo
+export const getEsp32ByIdentificacion = async (id: string): Promise<IEsp32Response> => {
+  const token = getToken();
+  if (!token) throw new Error("No hay token de autenticación");
+
+  const response = await axios.get(`${API_URL}/byid/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

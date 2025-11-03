@@ -71,6 +71,10 @@ const BuscarConductor: React.FC = () => {
     }
   };
 
+  const handleCrearConductor = () => {
+    navigate("/conductor/crear-conductor");
+  };
+
   return (
     <div
       style={{
@@ -85,8 +89,17 @@ const BuscarConductor: React.FC = () => {
           margin: "0 auto",
         }}
       >
-        {/* Header con botón de dashboard */}
-        <div style={{ marginBottom: "2rem" }}>
+        {/* Header con botones */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "2rem",
+            gap: "1rem",
+            flexWrap: "wrap",
+          }}
+        >
           <button
             onClick={() => navigate("/dashboard")}
             style={{
@@ -112,6 +125,38 @@ const BuscarConductor: React.FC = () => {
             }}
           >
             ← Volver al Dashboard
+          </button>
+
+          <button
+            onClick={handleCrearConductor}
+            style={{
+              background: "rgba(255, 255, 255, 0.95)",
+              border: "2px solid rgba(255, 255, 255, 0.3)",
+              color: "#667eea",
+              padding: "0.75rem 1.5rem",
+              borderRadius: "12px",
+              cursor: "pointer",
+              fontSize: "0.95rem",
+              fontWeight: "600",
+              transition: "all 0.3s ease",
+              boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = "#fff";
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 6px 20px rgba(0, 0, 0, 0.2)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = "rgba(255, 255, 255, 0.95)";
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 15px rgba(0, 0, 0, 0.1)";
+            }}
+          >
+            <span>➕</span>
+            <span>Nuevo Conductor</span>
           </button>
         </div>
 

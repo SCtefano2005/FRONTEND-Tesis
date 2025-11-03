@@ -1,6 +1,6 @@
-import { createConductor, buscarConductorPorDniApi, actualizarConductorApi, eliminarConductorApi } from "../infra/conductorApi";
+import { createConductor, buscarConductorPorDniApi, actualizarConductorApi, eliminarConductorApi, buscarConductorPorIdApi } from "../infra/conductorApi";
 import { IConductor } from "../models/IConductor";
-import { IConductorResponse } from "../models/IConductorResponse";
+import { IConductorResponse, IResumenConductor } from "../models/IConductorResponse";
 
 // Caso de uso: crear conductor
 export const createConductorUseCase = async (data: IConductor) => {
@@ -19,6 +19,18 @@ export const buscarConductorPorDniUseCase = async (
   };
   return result;
 };
+
+// 🔹 Use case para obtener conductor por ID
+export const buscarConductorPorIdUseCase = async (id: string): Promise<IResumenConductor> => {
+  try {
+    const conductor = await buscarConductorPorIdApi(id);
+    return conductor;
+  } catch (error: any) {
+    console.error("Error en buscarConductorPorIdUseCase:", error);
+    throw new Error(error?.message || "Error al buscar el conductor por ID");
+  }
+};
+
 
 // Caso de uso: actualizar conductor
 export const actualizarConductorUseCase = async (

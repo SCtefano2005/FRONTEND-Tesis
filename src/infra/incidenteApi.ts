@@ -1,6 +1,6 @@
 import axios from  "axios";
 import { getToken } from "../application/authUseCases";
-import { IIncidente } from "../models/IIncidente";
+import { IIncidente, IIncidenteResponse } from "../models/IIncidente";
 
 const API_URL = "https://backend-tesis-jvfm.onrender.com/api/incidente/"
 
@@ -28,20 +28,19 @@ export const obtenerIncidentes = async (): Promise<IIncidente[]> => {
   }
 };
 
-export const obtenerIncidentesxId = async (id: string): Promise<IIncidente> => {
+export const obtenerIncidentesxId = async (id: string): Promise<IIncidenteResponse> => {
   try {
     const token = await getToken();
 
-    const { data } = await axios.get<IIncidente>(
-      `${API_URL}get/${id}`, 
+    const { data } = await axios.get<IIncidenteResponse>(
+      `${API_URL}get/${id}`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
+        headers: { Authorization: `Bearer ${token}` }
       }
     );
 
-    return data; 
+    return data;
+
   } catch (error: any) {
     console.error("Error al obtener incidente por ID:", error);
     throw new Error(error?.response?.data?.message || "Error al obtener incidente");
@@ -52,21 +51,33 @@ export const cambiarStatusIncidente = async (id: string, estado: string) => {
   try {
     const token = await getToken();
 
-    const { data } = await axios.put(
-      `${API_URL}cambiarestado/${id}`,   
-      { estado },         
+    const response = await axios.post(
+      `${API_URL}cambiarestado`,
+      { id, estado },
       {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-
       }
     );
 
-    return data;
+    return response.data;
 
   } catch (error: any) {
-    console.error("Error al cambiar estado:", error);
-    throw new Error(error?.response?.data?.error || "Error al cambiar estado");
+
+    const backendMsg =
+      error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      error?.message ||
+      "Error al cambiar estado del incidente";
+
+    console.error("⚠️ Error cambiarStatusIncidente:", {
+        status: error?.response?.status,
+        url: error?.config?.url,
+        payload: error?.config?.data,
+        backendMsg,
+    });
+
+    throw new Error(backendMsg);
   }
 };

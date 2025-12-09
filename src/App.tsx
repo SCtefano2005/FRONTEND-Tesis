@@ -238,7 +238,7 @@ function App() {
         />
 
         <Route
-          path="/incidente/:id"
+          path="/incidentes/:id"
           element={
             <ProtectedRoute>
               <DetalleIncidenteView />

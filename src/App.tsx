@@ -6,6 +6,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import 'leaflet/dist/leaflet.css';
 
 import LoginAdmin from "./UI/pages/Login/LoginAdmin";
 import Dashboard from "./UI/pages/dashboard/Dashboard";
@@ -26,7 +27,13 @@ import FormBuscarBus from "./UI/pages/CRUDS/Bus/FormBuscarBus";
 import FormEditBus from "./UI/pages/CRUDS/Bus/FormEditBus";
 import FormCreateViaje from "./UI/pages/CRUDS/Viaje/FormCreateViaje";
 import SuperBuscadorViajes from "./UI/pages/CRUDS/Viaje/FormSearchViaje"
-import FormEditViaje from "./UI/pages/CRUDS/Viaje/FormEditViaje";
+import FormEditViaje   from "./UI/pages/CRUDS/Viaje/FormEditViaje";
+import ViajesEnCursoList from "./UI/pages/CRUDS/RealTime/List";
+import Viewviaje from "./UI/pages/CRUDS/RealTime/View";
+import ObtenerListaIncidentes from "./UI/pages/CRUDS/Incidente/FormIncidenteSearch";
+import DetalleIncidenteView from "./UI/pages/CRUDS/Incidente/DetalleIncidenteView";
+
+
 
 // Componente para proteger rutas
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -199,6 +206,42 @@ function App() {
           element={
             <ProtectedRoute>
               <FormEditViaje />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/viaje/todos"
+          element={
+            <ProtectedRoute>
+              <ViajesEnCursoList />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/viaje/visualizar/:id_viaje"
+          element={
+            <ProtectedRoute>
+              <Viewviaje />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/incidente/todos"
+          element={
+            <ProtectedRoute>
+              <ObtenerListaIncidentes />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/incidente/:id"
+          element={
+            <ProtectedRoute>
+              <DetalleIncidenteView />
             </ProtectedRoute>
           }
         />

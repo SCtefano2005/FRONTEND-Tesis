@@ -62,17 +62,28 @@ export const deleteViaje = async (id: string): Promise<{ message: string }> => {
   return response.data;
 };
 
-// 🔹 Listar todos los viajes
+// 🔹 Listar todos los viajes falta codear en el back
 export const listViajes = async (): Promise<IViajeResponse[]> => {
   const token = getToken();
   if (!token) throw new Error("No hay token de autenticación");
 
-  const response = await axios.get(`${API_URL}/`, {
+  const response = await axios.get(`${API_URL}/todos`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
   return response.data as IViajeResponse[];
 };
+// falta codear en el back
+export const listViajesEncurso = async (): Promise<IViajeResponse[]> => {
+  const token = getToken();
+  if (!token) throw new Error("No hay token de autentificación");
+
+  const response = await axios.get(`${API_URL}/leaflet`, {
+    headers: { Authorization: `Bearer ${token}`},
+  });
+
+  return response.data as IViajeResponse[];
+}
 
 // 🔹 Buscar viajes por DNI de conductor
 export const getViajesByConductor = async (dni: string): Promise<IViajeResponse[]> => {

@@ -7,7 +7,8 @@ import {
   listViajes,
   getViajesByConductor,
   getViajesByBus,
-  getViajesByRuta
+  getViajesByRuta,
+  listViajesEncurso
 } from "../infra/viajeApi";
 import { IViajeCreate, IviajeEdit, IViajeResponse } from "../models/IViaje";
 
@@ -19,6 +20,11 @@ export const createViajeUseCase = async (data: IViajeCreate): Promise<IViajeResp
 // 🔹 Caso de uso: obtener todos los viajes
 export const listViajesUseCase = async (): Promise<IViajeResponse[]> => {
   return await listViajes();
+};
+
+// es para usar en los rooms de socket io
+export const listViajesEncursousecase = async (): Promise<IViajeResponse[]> => {
+  return await listViajesEncurso();
 };
 
 // 🔹 Caso de uso: buscar un viaje por ID

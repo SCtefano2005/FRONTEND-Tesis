@@ -62,7 +62,7 @@ const FormEditViaje: React.FC = () => {
       });
 
       setSuccess("✅ Viaje actualizado correctamente");
-      setTimeout(() => navigate("/viajes/search"), 1500);
+      setTimeout(() => navigate("/viaje/search"), 1500);
     } catch (error: any) {
       console.error("❌ Error al actualizar el viaje:", error);
       setError(error.message || "Error al actualizar el viaje. Intenta nuevamente.");

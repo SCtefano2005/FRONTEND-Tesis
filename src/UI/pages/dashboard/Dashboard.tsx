@@ -53,6 +53,21 @@ export default function Dashboard({ perfil, onLogout }: DashboardProps) {
       color: "linear-gradient(135deg, #30cfd0 0%, #330867 100%)",
       path: "/admin/create",
     },
+    {
+      title: "Seguimiento",
+      icon: "👀",
+      description: "Visualización de los buses en tiempo real",
+      color: "linear-gradient(135deg, #97dab4ff 0%, #08671eff 100%)",
+      path: "/viaje/todos", //completar
+    },
+
+    {
+      title: "Incidentes",
+      icon: "👀",
+      description: "Gestiona los incidentes",
+      color: "linear-gradient(135deg, #97dab4ff 0%, #e0cc18ff 100%)",
+      path: "/incidente/todos", //completar
+    }
   ];
 
   return (
@@ -326,7 +341,7 @@ export default function Dashboard({ perfil, onLogout }: DashboardProps) {
       marginBottom: "0.5rem"
     }}
   >
-    6
+    8
   </div>
   <div style={{ color: "#000000", fontSize: "0.9rem" }}>
     Módulos disponibles

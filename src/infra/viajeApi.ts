@@ -62,7 +62,7 @@ export const deleteViaje = async (id: string): Promise<{ message: string }> => {
   return response.data;
 };
 
-// 🔹 Listar todos los viajes falta codear en el back
+                    
 export const listViajes = async (): Promise<IViajeResponse[]> => {
   const token = getToken();
   if (!token) throw new Error("No hay token de autenticación");
@@ -73,7 +73,7 @@ export const listViajes = async (): Promise<IViajeResponse[]> => {
 
   return response.data as IViajeResponse[];
 };
-// falta codear en el back
+
 export const listViajesEncurso = async (): Promise<IViajeResponse[]> => {
   const token = getToken();
   if (!token) throw new Error("No hay token de autentificación");

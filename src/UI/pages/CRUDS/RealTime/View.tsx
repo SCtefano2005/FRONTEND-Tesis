@@ -4,8 +4,7 @@ import {
   connectSocketToViaje,
   onCoordenada,
   offCoordenada,
-  disconnectSocket,
-  getSocket
+  disconnectSocket
 } from "../../../../infra/socketViaje";
 
 import L from "leaflet";
@@ -16,6 +15,46 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "/leaflet/marker-shadow.png",
 });
 
+const parseFechaLocalEsPE = (valor: string): Date | null => {
+  try {
+    // Ejemplo: "10/12/2025, 4:18:31 a. m."
+    const [fechaParte, horaParteRaw] = valor.split(",");
+    if (!fechaParte || !horaParteRaw) return null;
+
+    const [diaStr, mesStr, anioStr] = fechaParte.trim().split("/");
+    const [horaStr, minutoStr, segundoStr, sufijo1, sufijo2] = horaParteRaw
+      .trim()
+      .split(/[:\s]+/);
+
+    const dia = Number(diaStr);
+    const mes = Number(mesStr) - 1; // Mes 0-11
+    const anio = Number(anioStr);
+    let hora = Number(horaStr);
+    const minuto = Number(minutoStr);
+    const segundo = Number(segundoStr);
+
+    const sufijo = `${sufijo1} ${sufijo2}`.toLowerCase(); // "a. m." o "p. m."
+
+    if (
+      [dia, mes, anio, hora, minuto, segundo].some((n) => Number.isNaN(n))
+    ) {
+      return null;
+    }
+
+    // Convertir a formato 24h
+    if (sufijo.includes("p.") && hora < 12) {
+      hora += 12;
+    }
+    if (sufijo.includes("a.") && hora === 12) {
+      hora = 0;
+    }
+
+    return new Date(anio, mes, dia, hora, minuto, segundo);
+  } catch {
+    return null;
+  }
+};
+
 const Viewviaje = () => {
   const { id_viaje } = useParams<{ id_viaje: string }>();
   const navigate = useNavigate();
@@ -24,42 +63,80 @@ const Viewviaje = () => {
   const markerRef = useRef<L.Marker | null>(null);
 
   const [coord, setCoord] = useState<any>(null);
-  const [hora, setHora] = useState<string>("");
+  const [hora, setHora] = useState<string>("—");
 
-  const formatHora = (timestamp: string) => {
-    const fecha = new Date(timestamp);
-    return fecha.toLocaleTimeString("es-PE", { hour12: false });
+  const formatHora = (timestamp?: string) => {
+    console.log("🟦 formatHora() recibió:", timestamp);
+
+    if (!timestamp) return "—";
+
+    let fecha = new Date(timestamp);
+
+    if (isNaN(fecha.getTime()) && timestamp.includes("/")) {
+      console.log("🔁 Intentando parsear formato local ES-PE:", timestamp);
+      const parseada = parseFechaLocalEsPE(timestamp);
+      if (parseada) {
+        fecha = parseada;
+      }
+    }
+
+    console.log("🟪 Fecha final en formatHora:", fecha);
+
+    if (isNaN(fecha.getTime())) {
+      console.log("❌ Fecha inválida incluso tras parsear");
+      return "—";
+    }
+
+    const h = fecha.toLocaleTimeString("es-PE", { hour12: false });
+    console.log("✅ Hora formateada:", h);
+    return h;
   };
 
   useEffect(() => {
     if (!id_viaje) return;
 
-    const socket = connectSocketToViaje(id_viaje);
+    connectSocketToViaje(id_viaje);
 
     const handler = (data: any) => {
-      console.log("📍 Coordenada recibida:", data);
-      setCoord(data);
-      setHora(formatHora(data.timestamp));
+      console.log("📥 RAW recibido del socket:", data);
+
+      const item = Array.isArray(data) ? data[0] : data;
+
+      console.log("📌 Item normalizado:", item);
+      console.log("👉 typeof timestamp:", typeof item.timestamp);
+      console.log("👉 timestamp recibido:", item.timestamp);
+
+      let ts: any = item.timestamp;
+
+      // Caso Date object
+      if (ts && typeof ts === "object" && typeof ts.toISOString === "function") {
+        console.log("🔵 Timestamp es Date object, convirtiendo a ISO...");
+        ts = ts.toISOString();
+      }
+
+      // Si llega string local, lo dejamos tal cual para que lo maneje formatHora
+      console.log("✅ Timestamp final a enviar a formatHora:", ts);
+
+      setCoord(item);
+      setHora(formatHora(ts));
 
       if (!mapRef.current) {
-        mapRef.current = L.map("map").setView([data.latitud, data.longitud], 16);
+        console.log("🗺️ Inicializando mapa...");
+        mapRef.current = L.map("map").setView([item.latitud, item.longitud], 16);
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           maxZoom: 19,
         }).addTo(mapRef.current);
 
-        markerRef.current = L.marker([data.latitud, data.longitud], {
-          icon: L.icon({
-            iconUrl: "/leaflet/marker-icon.png",
-            shadowUrl: "/leaflet/marker-shadow.png",
-            iconSize: [27, 41],
-          }),
-        }).addTo(mapRef.current);
+        markerRef.current = L.marker([item.latitud, item.longitud]).addTo(
+          mapRef.current
+        );
       } else {
-        markerRef.current?.setLatLng([data.latitud, data.longitud]);
+        console.log("📍 Actualizando marcador...");
+        markerRef.current?.setLatLng([item.latitud, item.longitud]);
 
         mapRef.current.setView(
-          [data.latitud, data.longitud],
+          [item.latitud, item.longitud],
           mapRef.current.getZoom(),
           { animate: true, duration: 0.5 }
         );
@@ -77,23 +154,11 @@ const Viewviaje = () => {
   return (
     <div style={styles.container}>
       <div style={styles.contentWrapper}>
-        {/* Header */}
         <div style={styles.header}>
-          <button
-            style={styles.backBtn}
-            onClick={() => navigate(-1)}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = "#5a5ad1";
-              e.currentTarget.style.transform = "translateY(-2px)";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.transform = "translateY(0)";
-            }}
-          >
+          <button style={styles.backBtn} onClick={() => navigate(-1)}>
             ← Volver
           </button>
-          
+
           <div style={styles.titleSection}>
             <div style={styles.iconCircle}>
               <span style={styles.icon}>🗺️</span>
@@ -105,29 +170,27 @@ const Viewviaje = () => {
           </div>
         </div>
 
-        {/* Mapa */}
         <div style={styles.mapContainer}>
           <div id="map" style={styles.map} />
         </div>
 
-        {/* Información */}
         <div style={styles.infoBox}>
           <h3 style={styles.infoTitle}>
             <span>📊</span> Datos de Ubicación
           </h3>
-          
+
           {coord ? (
             <div style={styles.infoGrid}>
               <div style={styles.infoCard}>
                 <div style={styles.infoLabel}>📍 Latitud</div>
                 <div style={styles.infoValue}>{coord.latitud.toFixed(6)}</div>
               </div>
-              
+
               <div style={styles.infoCard}>
                 <div style={styles.infoLabel}>📍 Longitud</div>
                 <div style={styles.infoValue}>{coord.longitud.toFixed(6)}</div>
               </div>
-              
+
               <div style={{ ...styles.infoCard, gridColumn: "1 / -1" }}>
                 <div style={styles.infoLabel}>🕒 Última Actualización</div>
                 <div style={styles.infoValue}>{hora}</div>
@@ -135,38 +198,20 @@ const Viewviaje = () => {
             </div>
           ) : (
             <div style={styles.loadingState}>
-              <div style={styles.spinner} />
               <p style={styles.loadingText}>Esperando señal GPS del vehículo...</p>
             </div>
           )}
         </div>
       </div>
-
-      <style>
-        {`
-          @keyframes spin {
-            to {
-              transform: rotate(360deg);
-            }
-          }
-          
-          @keyframes fadeIn {
-            from {
-              opacity: 0;
-              transform: translateY(10px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-        `}
-      </style>
     </div>
   );
 };
 
 export default Viewviaje;
+
+
+
+
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
